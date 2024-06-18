@@ -27,6 +27,6 @@ RUN npm ci
 COPY --from=build --chown=node:node /app/dist ./dist
 COPY --chown=node:node .babelrc .
 
-EXPOSE 3003
+EXPOSE 3005
 
 CMD ["node", "dist/index.js"]
