@@ -1,0 +1,53 @@
+services:
+  app:
+    image: accommodatio-reviews:latest
+    depends_on:
+      - mongo
+      - rabbitmq
+    environment:
+      PORT: 3005
+      MONGO_URI: mongodb://localhost:27017
+      MONGO_DB_NAME: reviews
+      MONGO_COLLECTION_NAME: reviews
+      ALLOWED_ORIGIN: http://localhost:4200
+      RESERVATIONS_URL: http://localhost:3004/reservations
+      RABBITMQ_HOST: some-rabbit
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest1
+      RABBITMQ_PASSWORD: guest1
+    ports:
+      - "3005:3005"
+    restart: always
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:3005/reviews/health"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: some-rabbit
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest1
+      RABBITMQ_DEFAULT_PASS: guest1
+
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: pass
+    ports:
+      - "27017:27017"
+
+networks:
+  app-network:
+    driver: bridge
