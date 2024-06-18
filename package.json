@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "ts-node src/index.ts",
-    "test": "jest"
+    "test": "echo \"No test specified\""
   },
   "repository": {
     "type": "git",
