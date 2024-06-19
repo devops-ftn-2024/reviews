@@ -56,7 +56,8 @@ export class ReviewRepository {
     async updateUsername(usernameDTO: UsernameDTO) {
         const { oldUsername, newUsername } = usernameDTO;
         const result = await this.collection.updateMany({ reviewerUsername: oldUsername }, { $set: { reviewerUsername: newUsername } });
-        return result.modifiedCount;
+        const resultHosts = await this.collection.updateMany({ hostUsername: oldUsername }, { $set: { hostUsername: newUsername } });
+        return result.modifiedCount > 0 || resultHosts.modifiedCount > 0;
     }
 
     async updateReview(id: string, reviewInput: Review) {
