@@ -1,6 +1,7 @@
 import { Collection, Filter, MongoClient, ObjectId } from "mongodb";
 import { Review } from "../types/reviews";
 import { UsernameDTO } from "../types/users";
+import { Logger } from "../util/logger";
 
 interface MongoReview extends Omit<Review, '_id'> {
     _id?: ObjectId;
@@ -31,17 +32,20 @@ export class ReviewRepository {
     }
 
     async getReview(id: string) {
+        Logger.log(`Getting review with id: ${id}`);
         return this.collection.findOne({ '_id': new ObjectId(id) });
     }
 
     async createReview(review: Review) {
+        Logger.log('Creating new review');
         const {_id, ...reviewData} = review;
         const result = await this.collection.insertOne(reviewData);
-        console.log(result);
+        Logger.log(`New review created with id: ${result.insertedId}`);
         return result.insertedId;
     }
 
     async getReviewsByUser(username: string, entityId: string, hostUsername: string) {
+        Logger.log(`Getting all reviews which belongs to user: ${username}`);
         const filter = { reviewerUsername: username };
         if (entityId) {
             filter['entityId'] = entityId;
@@ -49,18 +53,21 @@ export class ReviewRepository {
         if (hostUsername) {
             filter['hostUsername'] = hostUsername;
         }
-        console.log(`Getting reviews with filter: ${JSON.stringify(filter)}`)
+        Logger.log(`Getting reviews with filter: ${JSON.stringify(filter)}`)
         return this.collection.find(filter).toArray();
     }
 
     async updateUsername(usernameDTO: UsernameDTO) {
+        Logger.log(`Updating username from ${usernameDTO.oldUsername} to ${usernameDTO.newUsername}`);
         const { oldUsername, newUsername } = usernameDTO;
         const result = await this.collection.updateMany({ reviewerUsername: oldUsername }, { $set: { reviewerUsername: newUsername } });
         const resultHosts = await this.collection.updateMany({ hostUsername: oldUsername }, { $set: { hostUsername: newUsername } });
+        Logger.log(`Updated ${result.modifiedCount} reviews and ${resultHosts.modifiedCount} hosts`);
         return result.modifiedCount > 0 || resultHosts.modifiedCount > 0;
     }
 
     async updateReview(id: string, reviewInput: Review) {
+        Logger.log(`Updating review with id: ${id}`);
         const filter = { '_id': new ObjectId(id) };
         let updateQuery: Filter<MongoReview> = { $set: {} };
 
@@ -71,6 +78,7 @@ export class ReviewRepository {
             updateQuery.$set.comment = reviewInput.comment;
         }
 
+        Logger.log(`Updating review with query: ${JSON.stringify(updateQuery)}`);
         if (Object.keys(updateQuery.$set).length > 0) {
             const result = await this.collection.updateOne(filter, updateQuery);
             return result.modifiedCount > 0;
@@ -79,7 +87,9 @@ export class ReviewRepository {
     }
 
     async deleteReview(id: string) {
+        Logger.log(`Deleting review with id: ${id}`);
         const result = await this.collection.deleteOne({ '_id': new ObjectId(id) });
+        Logger.log(`Deleted ${result.deletedCount} reviews`);
         return result.deletedCount > 0;
     }
 }
