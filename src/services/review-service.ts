@@ -156,4 +156,13 @@ export class ReviewService {
         }
         return this.repository.deleteReview(id);
     }
+
+    public async deleteUser(username: string) {
+        Logger.log(`Deleting reviews with username: ${username}`);
+        if (!username) {
+            Logger.error("Missing username parameter");
+            throw new BadRequestError("Missing username parameter");
+        }
+        return this.repository.deleteUser(username);
+    }
 }
