@@ -79,11 +79,25 @@ export class ReviewService {
             Logger.error("Missing logged user username parameter");
             throw new BadRequestError("Missing username parameter");
         }
-        if (user.role !== Role.HOST) {
-            Logger.error("Only hosts can get accommodations by user");
-            throw new ForbiddenError("Only hosts can get accommodations by user");
-        }
         return this.repository.getReviewsByUser(user.username, entityId, hostUsername);
+    }
+
+    async getReviewsByAccommodation(id: string) {
+        Logger.log(`Getting all reviews which belongs to accommodation with id: ${id}`);
+        if (!id) {
+            Logger.error("Missing id parameter");
+            throw new BadRequestError("Missing id parameter");
+        }
+        return this.repository.getReviewsByAccommodation(id);
+    }
+
+    async getReviewsByHost(username: string) {
+        Logger.log(`Getting all reviews which belongs to host with username: ${username}`);
+        if (!username) {
+            Logger.error("Missing id parameter");
+            throw new BadRequestError("Missing id parameter");
+        }
+        return this.repository.getReviewsByHost(username);
     }
 
     async updateUsername(usernameDTO: UsernameDTO) {
