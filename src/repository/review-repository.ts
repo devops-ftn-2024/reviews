@@ -102,4 +102,12 @@ export class ReviewRepository {
         Logger.log(`Deleted ${result.deletedCount} reviews`);
         return result.deletedCount > 0;
     }
+
+    async deleteUser(username: string) {
+        Logger.log(`Deleting reviews with username: ${username}`);
+        const result = await this.collection.deleteMany({ reviewerUsername: username });
+        const resultHosts = await this.collection.deleteMany({ hostUsername: username });
+        Logger.log(`Deleted ${result.deletedCount} reviews and ${resultHosts.deletedCount} hosts`);
+        return result.deletedCount > 0 || resultHosts.deletedCount > 0;
+    }
 }
