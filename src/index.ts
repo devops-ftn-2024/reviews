@@ -177,8 +177,35 @@ app.post('/reviews', async (req, res) => {
     }
 });
 
+app.get('/reviews/accommodations/:id', async (req, res) => {
+    Logger.log(`Getting all reviews which belongs to accommodation with id: ${req.params.id}`);
+    try {
+        const reviews = await reviewService.getReviewsByAccommodation(req.params.id);
+        Logger.log(`Reviews for accommodation with id: ${req.params.id}: ${JSON.stringify(reviews)}`);
+        return res.json(reviews);
+    } catch (err) {
+      Logger.error(`Error while getting reviews for accommodation with id: ${req.params.id}`);
+      const code = err instanceof CustomError ? err.code : 500;
+      return res.status(code).json({ message: (err as Error).message });
+    }
+})
+
+app.get('/reviews/hosts/:username', async (req, res) => {
+    Logger.log(`Getting all reviews which belongs to host with id: ${req.params.username}`);
+    try {
+        const reviews = await reviewService.getReviewsByHost(req.params.username);
+        Logger.log(`Reviews for host with id: ${req.params.username}: ${JSON.stringify(reviews)}`);
+        return res.json(reviews);
+    } catch (err) {
+      Logger.error(`Error while getting reviews for host with id: ${req.params.username}`);
+      const code = err instanceof CustomError ? err.code : 500;
+      return res.status(code).json({ message: (err as Error).message });
+    }
+
+});
+
 app.get('/reviews/', async (req, res) => {
-    Logger.log(`Getting all reviews which belongs to user: ${JSON.stringify(req.headers.user)}`);
+    Logger.log(`Getting all reviews which belong to user: ${JSON.stringify(req.headers.user)}`);
     const userDataStr = req.headers.user;
     try {
         if (!userDataStr) {

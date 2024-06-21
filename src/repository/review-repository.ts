@@ -57,6 +57,16 @@ export class ReviewRepository {
         return this.collection.find(filter).toArray();
     }
 
+    async getReviewsByAccommodation(accommodationId: string) {
+        Logger.log(`Getting all reviews which belongs to accommodation with id: ${accommodationId}`);
+        return this.collection.find({ entityId: accommodationId }).toArray();
+    }
+
+    async getReviewsByHost(hostUsername: string) {
+        Logger.log(`Getting all reviews which belongs to host with id: ${hostUsername}`);
+        return this.collection.find({ hostUsername: hostUsername }).toArray();
+    }
+
     async updateUsername(usernameDTO: UsernameDTO) {
         Logger.log(`Updating username from ${usernameDTO.oldUsername} to ${usernameDTO.newUsername}`);
         const { oldUsername, newUsername } = usernameDTO;
