@@ -55,6 +55,7 @@ export class ReviewService {
         try {
             Logger.log(`Emmiting event for ${review.type === Type.ACCOMMODATION ? 'accommodation' : 'host'} review created`);
             const reviewData = {
+                id: review.type === Type.ACCOMMODATION  ? review.entityId : review.hostUsername,
                 rating: review.rating,
 
             }
