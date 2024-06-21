@@ -170,7 +170,7 @@ app.post('/reviews', async (req, res) => {
         Logger.log(`Logged user: ${JSON.stringify(userData)}`);
         const newReviewId = await reviewService.createReview(userData, req.body);
         Logger.log(`New review created: ${JSON.stringify(newReviewId)}`);
-        return res.status(201).json({ id: newReviewId });
+        return res.status(201).json({ newReviewId });
     } catch (err) {
         const code = err instanceof CustomError ? err.code : 500;
         return res.status(code).json({ message: (err as Error).message });
